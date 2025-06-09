@@ -1,42 +1,35 @@
 import React, { useState } from "react";
+import openai from "../openai";
 
-const FutureFX41Chat = () => {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
+function FutureFX41Chat() {
+  const [response, setResponse] = useState("");
 
-  const handleSend = () => {
-    if (!input.trim()) return;
-    const newMessage = { user: "Alvaro", text: input };
-    setMessages([...messages, newMessage]);
-    setInput("");
-    // Aquí irá la conexión con la IA para generar respuesta y código
+  const handleClick = async () => {
+    const res = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: "Genera una tarea automática para mí" }],
+    });
+
+    setResponse(res.choices[0].message.content);
   };
 
   return (
-    <div className="p-4 border rounded shadow-md bg-white">
-      <h2 className="text-xl font-semibold mb-2">🤖 Chat IA - FutureFX41</h2>
-      <div className="h-60 overflow-y-auto border p-2 mb-2">
-        {messages.map((msg, idx) => (
-          <div key={idx} className="mb-1">
-            <strong>{msg.user}:</strong> {msg.text}
-          </div>
-        ))}
-      </div>
-      <input
-        className="w-full border px-2 py-1 mb-2"
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        placeholder="Escribe una orden..."
-      />
+    <div className="bg-white p-4 rounded shadow">
       <button
-        onClick={handleSend}
-        className="bg-blue-600 text-white px-4 py-1 rounded"
+        onClick={handleClick}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
-        Enviar
+        Ejecutar tarea automática
       </button>
+
+      {response && (
+        <div className="mt-4 bg-gray-100 p-3 rounded text-gray-800 whitespace-pre-wrap">
+          {response}
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default FutureFX41Chat;
+
